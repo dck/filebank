@@ -1,0 +1,4 @@
+filebank
+========
+
+Imitates removing files
