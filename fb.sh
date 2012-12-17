@@ -17,17 +17,27 @@ MAXSIZE=$((10*1024*1024)) # bytes
 
 remove()
 {
-    BANKSIZE=`du -bs $BANKDIR | cut -f1`
     for i in $@
     do
-        if [ -e $BANKDIR/$i ];
+        [ -e $i ] || continue
+        banksize=`du -bs $BANKDIR | cut -f1`
+        filesize=`du -bs $i | cut -f1`
+        totalsize=$(($filesize+$banksize))
+        if [ $totalsize -gt $MAXSIZE ];
         then
-            echo "File $i already exists"
+            echo "Bask size is too much"
+            exit 1
         else
-            abs=$(readlink -f $i)
-            mv $i $BANKDIR/$i
-            echo "$i $abs" >> $HISTORY
+            if [ -e $BANKDIR/$i ];
+            then
+                echo "File $i already exists"
+            else
+                abs=$(readlink -f $i)
+                mv $i $BANKDIR/$i
+                echo "$i $abs" >> $HISTORY
+            fi
         fi
+
     done
 }
 restore()
