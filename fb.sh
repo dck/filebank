@@ -16,12 +16,15 @@ fi
 # fi
 
 
-
 remove()
 {
     for i in $@
     do
-        [ -e $i ] || continue
+        if [ ! -e $i ];
+        then
+            echo "File $i not found"
+            continue
+        fi
         banksize=`du -bs $BANKDIR | cut -f1`
         filesize=`du -bs $i | cut -f1`
         totalsize=$(($filesize+$banksize))
@@ -34,7 +37,7 @@ remove()
             then
                 echo "File $i already exists"
             else
-                abs=$(readlink -f $i)
+                #abs=$(readlink -f $i)
                 mv $i $BANKDIR/$i
                 # echo "$i $abs" >> $HISTORYPATH
             fi
@@ -71,10 +74,11 @@ list()
 
 usage()
 {
-    echo "Usage: $0 <rm|restore|out> file1[,file2[,file3[,...]]]"
+    echo "Usage: $0 <rm|restore|out|list> file1[,file2[,file3[,...]]]"
     echo "  rm      - remove file to filebank"
     echo "  restore - restore file from filebank"
     echo "  out     - remove file permanently"
+    echo "  list    - show file list in bank"
     echo "  file    - the file :>"
     exit
 }
